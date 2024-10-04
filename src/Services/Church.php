@@ -16,7 +16,7 @@ class Church
     {
         $this->client = new Client([
             'headers' => [
-                //
+                'User-Agent' => 'Candelabro (https://github.com/SamuelMoraesF/Candelabro)',
             ]
         ]);
     }
