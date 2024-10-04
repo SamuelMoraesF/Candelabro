@@ -1,0 +1,119 @@
+name: Docs
+
+on:
+    push:
+        branches:
+            - main
+    pull_request: ~
+
+# See https://stackoverflow.com/a/72408109
+concurrency:
+    group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+    cancel-in-progress: true
+
+env:
+    TERM: xterm
+
+jobs:
+    check-markdown:
+        name: Lint Markdown
+        runs-on: ubuntu-latest
+        timeout-minutes: 1
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+
+            -   name: Check Markdown formatting
+                uses: DavidAnson/markdownlint-cli2-action@v16.0.0
+                with:
+                    globs: "*.md|doc/**/*.md"
+
+    check-links:
+        name: Lint Links
+        runs-on: ubuntu-latest
+        timeout-minutes: 1
+        steps:
+            -   name: Checkout repository
+                uses: actions/checkout@v4
+
+            -   name: Restore lychee cache
+                uses: actions/cache@v4
+                with:
+                    path: .lycheecache
+                    key: cache-lychee-${{ github.sha }}
+                    restore-keys: cache-lychee-
+
+            -   name: Run Lychee
+                uses: lycheeverse/lychee-action@v1.9.3
+                with:
+                    # To keep in sync with Makefile#lychee
+                    args: "--verbose --no-progress '*.md' 'doc/**/*.md' --cache --max-cache-age 1d ."
+                    output: ${{ runner.temp }}/lychee/out.md
+                    fail: true
+
+    build:
+        runs-on: ubuntu-latest
+        name: Build docs
+        permissions:
+            contents: write
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+
+            -   name: Setup Python
+                uses: actions/setup-python@v5
+                with:
+                    python-version: '3.8'
+
+            -   name: Display pip version
+                run: pip --version
+
+            -   name: Install dependencies
+                run: python3 -m pip install mkdocs mkdocs-material
+
+            -   name: Rebuild website
+                run: make _website_build
+
+            -   uses: actions/upload-artifact@v4
+                name: Upload the docs artifact
+                with:
+                    name: docs-website
+                    path: dist/website
+
+    # This is a "trick", a meta task which does not change, and we can use in
+    # the protected branch rules as opposed to the tests one above which
+    # may change regularly.
+    validate-docs:
+        name: Docs status
+        runs-on: ubuntu-latest
+        needs:
+            - check-markdown
+            - check-links
+            - build
+        if: always()
+        steps:
+            - name: Successful run
+              if: ${{ !(contains(needs.*.result, 'failure')) }}
+              run: exit 0
+
+            - name: Failing run
+              if: ${{ contains(needs.*.result, 'failure') }}
+              run: exit 1
+
+    deploy:
+        runs-on: ubuntu-latest
+        name: Deploy website
+        permissions:
+            contents: write
+        if: github.ref == 'refs/heads/main'
+        steps:
+            -   uses: actions/download-artifact@v4
+                with:
+                    name: docs-website
+                    path: dist/website
+
+            -   name: Deploy
+                uses: peaceiris/actions-gh-pages@v4
+                with:
+                    github_token: ${{ secrets.GITHUB_TOKEN }}
+                    publish_dir: dist/website

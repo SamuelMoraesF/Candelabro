@@ -1,0 +1,18 @@
+{
+    "$schema": "../../../res/schema.json",
+
+    "main": "box.php",
+    "output": "../../../dist/bench/box.phar",
+
+    "directories-bin": ["res"],
+    "force-autodiscovery": true,
+
+    "dump-autoload": false,
+    "datetime": "release-date",
+
+    "compactors": [
+        "KevinGH\\Box\\Compactor\\Php",
+        "KevinGH\\Box\\Compactor\\PhpScoper",
+        "KevinGH\\Box\\Compactor\\Json"
+    ]
+}

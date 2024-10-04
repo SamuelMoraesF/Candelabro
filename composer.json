@@ -1,0 +1,25 @@
+{
+    "name": "samuelmoraesf/candelabro",
+    "autoload": {
+        "psr-4": {
+            "Candelabro\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Samuel Moraes",
+            "email": "samuel@samuelmoraes.com"
+        }
+    ],
+    "require": {
+        "symfony/console": "^7.1",
+        "guzzlehttp/guzzle": "^7.9",
+        "laravel/prompts": "^0.3.0",
+        "symfony/dom-crawler": "^7.1",
+        "symfony/css-selector": "^7.1"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.18",
+        "humbug/box": "^4.6"
+    }
+}

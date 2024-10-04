@@ -1,0 +1,30 @@
+
+Box Requirements Checker
+========================
+
+> Using PHP PHP_VERSION
+> PHP is not using any php.ini file.
+
+> Checking Box requirements:
+  ✘ This application requires a PHP version matching "^10".
+  ✔ The package "package-with-extensions" requires the extension "json".
+  ✘ The package "package-with-extensions" requires the extension "ldap".
+  ✘ This application requires the extension "pdo_dblib".
+  ✔ This application requires the extension "phar".
+  ✔ The package "package-with-extensions" requires the extension "random".
+  
+                                                                                
+ [ERROR] Your system is not ready to run the application.                       
+                                                                                
+
+Fix the following mandatory requirements:
+=========================================
+
+ * This application requires a PHP version matching "^10".
+ * The package "package-with-extensions" requires the extension "ldap". You
+   either need to enable it or request the application to be shipped with a
+   polyfill for this extension.
+ * This application requires the extension "pdo_dblib". You either need to
+   enable it or request the application to be shipped with a polyfill for this
+   extension.
+

@@ -1,0 +1,9 @@
+{
+  "$schema": "../../../res/schema.json",
+
+  "alias": "e20-app",
+  "compactors": [
+    "KevinGH\\Box\\Compactor\\PhpScoper"
+  ],
+  "timestamp": "2020-10-20 10:01:11"
+}
